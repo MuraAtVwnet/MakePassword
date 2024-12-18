@@ -2,9 +2,10 @@
 # パスワード生成
 ##################################################
 function MakePassword(
-			[int]$PasswordSize, 				# 生成する文字数
+			[int]$PasswordSize, 			# 生成する文字数
 			[switch]$Numeric,				# 数字
-			[switch]$Alphabet,				# アルファベット
+			[switch]$AlphabetLarge,			# アルファベット大文字
+			[switch]$AlphabetSmall,			# アルファベット小文字
 			[switch]$BaseMark,				# 基本記号
 			[switch]$ExtendMark,			# 拡張記号
 			[switch]$OnlyAlphabetNumeric,	# 数字とアルファベットのみ
@@ -61,7 +62,8 @@ function MakePassword(
 
 	# ランダム文字列にセットする値
 	$NumericString 		= '1234567890'
-	$AlphabetString 	= 'ABCDEFGHIJKLNMOPQRSTUVWXYZabcdefghijklnmopqrstuvwxyz'
+	$AlphabetLargeString 	= 'ABCDEFGHIJKLNMOPQRSTUVWXYZ'
+	$AlphabetSmallString 	= 'abcdefghijklnmopqrstuvwxyz'
 	$BaseMarkString 	= '!.?+$%#&*=@'
 	$ExtendMarkString	= "'`"``()-^~\|[]{};:<>,/_"
 
@@ -70,7 +72,8 @@ function MakePassword(
 	}
 
 	if( ($Numeric -eq $false) -and
-		($Alphabet -eq $false) -and
+		($AlphabetLarge -eq $false) -and
+		($AlphabetSmall -eq $false) -and
 		($BaseMark -eq $false) -and
 		($ExtendMark -eq $false) -and
 		($OnlyAlphabetNumeric -eq $false) -and
@@ -80,18 +83,21 @@ function MakePassword(
 
 	if($Basic){
 		$Numeric = $True
-		$Alphabet = $True
+		$AlphabetLarge = $True
+		$AlphabetSmall = $True
 		$BaseMark = $True
 	}
 
 	if($OnlyAlphabetNumeric){
 		$Numeric = $True
-		$Alphabet = $True
+		$AlphabetLarge = $True
+		$AlphabetSmall = $True
 	}
 
 	if($AllCharacter){
 		$Numeric = $True
-		$Alphabet = $True
+		$AlphabetLarge = $True
+		$AlphabetSmall = $True
 		$BaseMark = $True
 		$ExtendMark = $True
 	}
@@ -103,9 +109,14 @@ function MakePassword(
 		$BaseString += $NumericString
 	}
 
-	# アルファベット
-	if($Alphabet){
-		$BaseString += $AlphabetString
+	# アルファベット大文字
+	if($AlphabetLarge){
+		$BaseString += $AlphabetLargeString
+	}
+
+	# アルファベット小文字
+	if($AlphabetSmall){
+		$BaseString += $AlphabetSmallString
 	}
 
 	# 基本記号
@@ -118,24 +129,71 @@ function MakePassword(
 		$BaseString += $ExtendMarkString
 	}
 
-	# 乱数格納配列
-	[array]$RandomValue = New-Object byte[] $PasswordSize
+	$LoopFlag = $true
+	$LoopIndex = 0
+	while($LoopFlag){
+		# 乱数格納配列
+		[array]$RandomValue = New-Object byte[] $PasswordSize
 
-	# オブジェクト 作成
-	$RNG = New-Object System.Security.Cryptography.RNGCryptoServiceProvider
+		# オブジェクト 作成
+		$RNG = New-Object System.Security.Cryptography.RNGCryptoServiceProvider
 
-	# 乱数の生成
-	$RNG.GetBytes($RandomValue)
+		# 乱数の生成
+		$RNG.GetBytes($RandomValue)
 
-	# 乱数を文字列に変換
-	[String] $PasswordString = ""
-	$Max = $BaseString.Length
-	for($i = 0; $i -lt $PasswordSize; $i++){
-		$PasswordString += $BaseString[($RandomValue[$i] % $Max)]
+		# 乱数を文字列に変換
+		[String] $PasswordString = ""
+		$Max = $BaseString.Length
+		for($i = 0; $i -lt $PasswordSize; $i++){
+			$PasswordString += $BaseString[($RandomValue[$i] % $Max)]
+		}
+
+		# オブジェクト削除
+		$RNG.Dispose()
+
+		$LoopFlag = $false
+
+		# 数字
+		if($Numeric -and ($LoopFlag -eq $false) ){
+			if($PasswordString -notmatch "[$NumericString]") {
+				$LoopFlag = $true
+			}
+		}
+
+		# アルファベット大文字
+		if($AlphabetLarge -and ($LoopFlag -eq $false) ){
+			if($PasswordString -cnotmatch "[$AlphabetLargeString]") {
+				$LoopFlag = $true
+			}
+		}
+
+		# アルファベット小文字
+		if($AlphabetSmall -and ($LoopFlag -eq $false) ){
+			if($PasswordString -cnotmatch "[$AlphabetSmallString]") {
+				$LoopFlag = $true
+			}
+		}
+
+		# 基本記号
+		if($BaseMark -and ($LoopFlag -eq $false) ){
+			if($PasswordString -notmatch "[$BaseMarkString]") {
+				$LoopFlag = $true
+			}
+		}
+
+		# 拡張記号
+		if($ExtendMark -and ($LoopFlag -eq $false) ){
+			if($PasswordString -notmatch "[$ExtendMarkString]") {
+				$LoopFlag = $true
+			}
+		}
+
+		$LoopIndex++
+		if( $LoopIndex -ge 10){
+			Write-Output "FAIL"
+			$LoopFlag = $false
+		}
 	}
-
-	# オブジェクト削除
-	$RNG.Dispose()
 
 	Set-Clipboard -Value $PasswordString
 

@@ -4,8 +4,6 @@
 パスワード生成スクリプトです
 指定文字種のパスワード(ランダム文字列)を生成し、クリップボードに格納します
 
-少々手抜きなので、指定文字種が全て含まれているかのチェックはしていません
-(指定文字種が足りないようなら再生成してください)
 
 ■ 使い方
 15文字のパスワードを生成する場合は、PowerShell プロンプトで以下のよう入力します
@@ -22,27 +20,30 @@ MakePassword 15
 
 -Basic
 	パスワードを基本文字列にする(default)
-	(Numeric + Alphabet + BaseMark)
+	(Numeric + AlphabetLarge + AlphabetSmall + BaseMark)
+
+-OnlyAlphabetNumeric
+	パスワードを数字とアルファベットのみにする
+	(Numeric + AlphabetLarge + AlphabetSmall)
+
+-AllCharacter
+	パスワードに全文字種を使用する
+	(Numeric + AlphabetLarge + AlphabetSmall + BaseMark + ExtendMark)
 
 -Numeric
 	パスワードに数字を含める
 
--Alphabet
-	パスワードにアルファベットを含める
+-AlphabetLarge
+	パスワードにアルファベット大文字を含める
+
+-AlphabetSmall
+	パスワードにアルファベット小文字を含める
 
 -BaseMark
 	パスワードに基本記号(!.?+$%#&*=@)を含める
 
 -ExtendMark
 	パスワードに拡張記号('`"``()-^~\|[]{};:<>,/_)を含める
-
--OnlyAlphabetNumeric
-	パスワードを数字とアルファベットのみにする
-	(Numeric + Alphabet)
-
--AllCharacter
-	パスワードに全文字種を使用する
-	(Numeric + Alphabet + BaseMark + ExtendMark)
 
 -VertionCheck
 	最新スクリプトがあるか確認する

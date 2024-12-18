@@ -3,14 +3,14 @@
 ##################################################
 function MakePassword(
 			[int]$PasswordSize, 			# 生成する文字数
+			[switch]$Basic,					# アルファベット+数字+基本記号
+			[switch]$OnlyAlphabetNumeric,	# 数字とアルファベットのみ
+			[switch]$AllCharacter,			# 全文字種
 			[switch]$Numeric,				# 数字
 			[switch]$AlphabetLarge,			# アルファベット大文字
 			[switch]$AlphabetSmall,			# アルファベット小文字
 			[switch]$BaseMark,				# 基本記号
 			[switch]$ExtendMark,			# 拡張記号
-			[switch]$OnlyAlphabetNumeric,	# 数字とアルファベットのみ
-			[switch]$AllCharacter,			# 全文字種
-			[switch]$Basic,					# アルファベット+数字+基本記号
 			[switch]$VertionCheck			# バージョンチェック
 		){
 

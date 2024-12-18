@@ -2,7 +2,7 @@
 # パスワード生成
 ##################################################
 function MakePassword(
-			[int]$ByteSize, 				# 生成する文字数
+			[int]$PasswordSize, 				# 生成する文字数
 			[switch]$Numeric,				# 数字
 			[switch]$Alphabet,				# アルファベット
 			[switch]$BaseMark,				# 基本記号
@@ -65,8 +65,8 @@ function MakePassword(
 	$BaseMarkString 	= '!.?+$%#&*=@'
 	$ExtendMarkString	= "'`"``()-^~\|[]{};:<>,/_"
 
-	if( $ByteSize -eq 0 ){
-		$ByteSize = 8
+	if( $PasswordSize -eq 0 ){
+		$PasswordSize = 8
 	}
 
 	if( ($Numeric -eq $false) -and
@@ -119,7 +119,7 @@ function MakePassword(
 	}
 
 	# 乱数格納配列
-	[array]$RandomValue = New-Object byte[] $ByteSize
+	[array]$RandomValue = New-Object byte[] $PasswordSize
 
 	# オブジェクト 作成
 	$RNG = New-Object System.Security.Cryptography.RNGCryptoServiceProvider
@@ -130,7 +130,7 @@ function MakePassword(
 	# 乱数を文字列に変換
 	[String] $PasswordString = ""
 	$Max = $BaseString.Length
-	for($i = 0; $i -lt $ByteSize; $i++){
+	for($i = 0; $i -lt $PasswordSize; $i++){
 		$PasswordString += $BaseString[($RandomValue[$i] % $Max)]
 	}
 

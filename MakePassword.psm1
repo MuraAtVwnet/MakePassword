@@ -16,7 +16,7 @@ function MakePassword(
 
 	# バージョンチェックとオンライン更新
 	if( $VertionCheck ){
-		$ModuleName = "TestModule"
+		$ModuleName = "MakePassword"
 		$GitHubName = "MuraAtVwnet"
 
 		$Module = $ModuleName + ".psm1"
